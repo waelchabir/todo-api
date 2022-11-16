@@ -1,0 +1,13 @@
+{
+  "version": "2.0",
+  "app_name": "todo-api",
+  "environment_variables": {
+    "API_VERSION": "1.0",
+    "APPLICATION_NAME": "SDA-todo-api"
+  },
+  "stages": {
+    "dev": {
+      "api_gateway_stage": "api"
+    }
+  }
+}
