@@ -16,12 +16,12 @@ class InMemoryTodoDB(object):
 
     def list_all_items(self):
         all_items = []
-        for uid in self._state:
-            all_items.extend(self.list_items(uid))
+        for v in self.list_items_values():
+            all_items.append(v)
         return all_items
 
-    def list_items(self):
-        return self._state.items()
+    def list_items_values(self):
+        return self._state.values()
 
     def add_item(self, title, description=''):
         uid = str(uuid4())
