@@ -6,7 +6,6 @@ from chalice import Chalice
 app = Chalice(app_name=os.getenv('APPLICATION_NAME'))
 app.debug = True
 _DB = None
-DEFAULT_USERNAME = 'default'
 
 
 class InMemoryTodoDB(object):
@@ -17,39 +16,34 @@ class InMemoryTodoDB(object):
 
     def list_all_items(self):
         all_items = []
-        for username in self._state:
-            all_items.extend(self.list_items(username))
+        for uid in self._state:
+            all_items.extend(self.list_items(uid))
         return all_items
 
-    def list_items(self, username=DEFAULT_USERNAME):
-        return self._state.get(username, {}).values()
+    def list_items(self):
+        return self._state.items()
 
-    def add_item(self, title, description='', username=DEFAULT_USERNAME):
-        if username not in self._state:
-            self._state[username] = {}
+    def add_item(self, title, description=''):
         uid = str(uuid4())
-        self._state[username][uid] = {
+        self._state[uid] = {
             'id': uid,
             'title': title,
             'description': description
         }
         return uid
 
-    def get_item(self, uid, username=DEFAULT_USERNAME):
-        return self._state[username][uid]
+    def get_item(self, uid):
+        return self._state[uid]
 
-    def delete_item(self, uid, username=DEFAULT_USERNAME):
-        del self._state[username][uid]
+    def delete_item(self, uid):
+        del self._state[uid]
 
-    def update_item(self, uid, description=None, state=None,
-                    metadata=None, username=DEFAULT_USERNAME):
-        item = self._state[username][uid]
+    def update_item(self, uid, title=None, description=None):
+        item = self._state[uid]
+        if title is not None:
+            item['title'] = title
         if description is not None:
             item['description'] = description
-        if state is not None:
-            item['state'] = state
-        if metadata is not None:
-            item['metadata'] = metadata
 
 
 def get_app_db():
@@ -61,7 +55,6 @@ def get_app_db():
 
 @app.route('/'+os.getenv('API_VERSION')+'/todo', methods=['GET'])
 def list_todos():
-    print('Listing todos ...')
     return get_app_db().list_all_items()
 
 @app.route('/'+os.getenv('API_VERSION')+'/todo', methods=['PUT'])
@@ -81,9 +74,9 @@ def update_todo(uid):
     body = app.current_request.json_body
     get_app_db().update_item(
         uid,
-        description=body.get('description'),
-        state=body.get('state'),
-        metadata=body.get('metadata'))
+        title=body.get('title'),
+        description=body.get('description')
+        )
 
 @app.route('/'+os.getenv('API_VERSION')+'/todo/{uid}', methods=['DELETE'])
 def delete_todo(uid):
