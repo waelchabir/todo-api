@@ -4,6 +4,8 @@
   "environment_variables": {
     "API_VERSION": "1.0",
     "APPLICATION_NAME": "SDA-todo-api",
+    "TODOS_TABLE_NAME": "todo-app-table",
+    "RESET_TODO_TABLE_ON_STARTUP":"NO",
     "TODO_CREATION_SUCCESS_MESSAGE": "To-Do object created successfully.",
     "TODO_UPDATE_SUCCESS_MESSAGE": "To-Do object updated successfully.",
     "TODO_DELETE_SUCCESS_MESSAGE": "To-Do object deleted successfully.",
@@ -15,7 +17,9 @@
   },
   "stages": {
     "dev": {
-      "api_gateway_stage": "api"
+      "api_gateway_stage": "api",
+      "autogen_policy": false,
+      "iam_policy_file": "policy-dev.json"
     }
   }
 }
